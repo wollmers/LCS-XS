@@ -11,7 +11,7 @@ BEGIN { use_ok('LCS::XS') };
 #########################
 
 my $obj = LCS::XS->new;
-$obj->LCS('ab','bc');
+$obj->LCSs('ab','bc');
 
 # Insert your test code below, the Test::More module is use()ed here so read
 # its man page ( perldoc Test::More ) for help writing this test script.

@@ -40,21 +40,6 @@ LCS::XS - Fast (XS) implementation of the
   $alg = LCS::XS->new;
   @lcs = $alg->LCS(\@a,\@b);
 
-  $cb = $alg->callback(@b); # closure
-  @lcs = $cb->(\@a);        # same result as prior LCS() call
-
-=head1 ABSTRACT
-
-AlignXS reimplements Algorithm::Diff's core loop in XS,
-and provides a simple OO interface to it.
-
-Extract from the Algorithm::Diff v1.15 manpage:
-
-  The algorithm is that described in
-  I<A Fast Algorithm for Computing Longest Common Subsequences>,
-  CACM, vol.20, no.5, pp.350-353, May 1977, with a few
-  minor improvements to improve the speed.
-
 
 =head1 DESCRIPTION
 
@@ -74,24 +59,10 @@ LCS() call.
 
 =over 4
 
-=item line_map(@lines)
-
-Send @lines to a hashref containing elements of the form
-
-       value => [(increasing) list of matching indices]
-
-=item callback(@lines)
-
-Generates a closure capturing the object and line_map hash for @lines.
-Most useful when computing multiple LCSs against a single file.
-
 =item LCS(\@a,\@b)
 
 Finds a Longest Common Subsequence, taking two arrayrefs as method
-arguments.  In scalar context the return value is the length of the
-subsequence.  In list context it yields a list of corresponding
-indices, which are represented by 2-element array refs.  See the
-L<Algorithm::Diff> manpage for more details.
+arguments.
 
 =back
 
@@ -105,11 +76,11 @@ Algorithm::Diff
 
 =head1 AUTHOR
 
-Joe Schaefer, E<lt>joe+cpan@sunstarsys.comE<gt>
+Helmut Wollmersdorfer E<lt>helmut.wollmersdorfer@gmail.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2003 by Joe Schaefer
+Copyright 2015 by Helmut Wollmersdorfer
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

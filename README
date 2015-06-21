@@ -1,5 +1,3 @@
-LCS/XS version 1.04
-==========================
 
 LCS::XS implements a LCS algorthm in XS.
 
