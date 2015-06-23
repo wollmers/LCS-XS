@@ -2,6 +2,9 @@
 #include "perl.h"
 #include "XSUB.h"
 
+#define NEED_newRV_noinc
+#define NEED_sv_2pvbyte
+
 #include "ppport.h"
 
 #include <string.h>
@@ -51,11 +54,9 @@ inline
 static const void * 
 _av_idx(const void *a, int idx, void *context)
 {
-    //AV *av = a;
     SV *line = *av_fetch((AV *)a, idx, 0);
     STRLEN klen;
     char *key = SvPVbyte(line, klen);
-    //printf("key: %s\n",key);
 
 	return key;
 }
@@ -94,7 +95,7 @@ lcs_posindex(obj,a)
       IV i;                       
       IV l;                                                          
     CODE:
-      l = av_top_index(a);
+      l = av_len(a);
       
       HV * pos_hash = newHV();
 
@@ -130,11 +131,11 @@ lcs_posbit(obj,a)
       IV l;
       IV bits;                                                         
     CODE:
-      l = av_top_index(a);
+      l = av_len(a);
       
       HV * pos_hash = newHV();
 
-      for (i = 0; i <= l; ++i) {
+      for (i = 0; i < l; ++i) {
             SV *line = *av_fetch(a, i, 0);
             STRLEN klen;
             char *key = SvPVbyte(line, klen);
@@ -173,8 +174,8 @@ void lcs_LCS(obj, s1, s2)
   
         IV n;
         IV m;
-        n = av_top_index(s1);
-        m = av_top_index(s2);
+        n = av_len(s1);
+        m = av_len(s2);
 
         d = diff(s1, 0, n+1, s2, 0, m+1, &_cmp_idx,  NULL, 0, ses, &sn, NULL);
 
@@ -183,21 +184,23 @@ void lcs_LCS(obj, s1, s2)
   x=y=0;
 
   XSprePUSH;
+  /*AV *av = newAV();*/
 
   for (i = 0; i < sn; i++) {
   	struct diff_edit *e = varray_get(ses, i);
   
   	switch (e->op) {
   		case DIFF_MATCH:
-  		    //printf("MAT: ");
-  			//printf("off %d len %d\n", e->off, e->len);
+  		    /*printf("MAT: ");*/
+  			/*printf("off %d len %d\n", e->off, e->len);*/
   		    for (j = 0; j < e->len; j++) {
-  		      //printf("x %d y %d\n", x, y);
+  		      /*printf("x %d y %d\n", x, y);*/
   		      
   		      AV *arr;
               arr = newAV();
               av_push(arr, newSViv(x));
               av_push(arr, newSViv(y));
+              /*av_push( av, (SV*)arr );*/
               XPUSHs(sv_2mortal(newRV_noinc((SV *)arr)));
                     
   			  x++;
@@ -205,18 +208,14 @@ void lcs_LCS(obj, s1, s2)
   			}
   			break;
   		case DIFF_DELETE:
-  			//printf("DEL: ");
-  			//printf("off %d len %d\n", e->off, e->len);
-  			for (j = 0; j < e->len; j++) {
-  			  x++;
-  			}
+  			/*printf("DEL: ");*/
+  			/*printf("off %d len %d\n", e->off, e->len);*/
+  			x += e->len;
   			break;
   		case DIFF_INSERT:
-  			//printf("INS: ");
-  			//printf("off %d len %d\n", e->off, e->len);
-  			for (j = 0; j < e->len; j++) {
-  			  y++;
-  			}
+  			/*printf("INS: ");*/
+  			/*printf("off %d len %d\n", e->off, e->len);*/
+  			y += e->len;
   			break;
   	}
   }
@@ -224,6 +223,7 @@ void lcs_LCS(obj, s1, s2)
                 
                 
   varray_del(ses);
+  /*return newRV_noinc( (SV*)av );*/
 
 
 
@@ -257,10 +257,10 @@ void lcs_LCSs(obj, s1, s2)
   
   	switch (e->op) {
   		case DIFF_MATCH:
-  		    //printf("MAT: ");
-  			//printf("off %d len %d\n", e->off, e->len);
+  		    /*printf("MAT: ");*/
+  			/*printf("off %d len %d\n", e->off, e->len);*/
   		    for (j = 0; j < e->len; j++) {
-  		      //printf("x %d y %d\n", x, y);
+  		      /*printf("x %d y %d\n", x, y);*/
   		      
   		      AV *arr;
               arr = newAV();
@@ -273,23 +273,77 @@ void lcs_LCSs(obj, s1, s2)
   			}
   			break;
   		case DIFF_DELETE:
-  			//printf("DEL: ");
-  			//printf("off %d len %d\n", e->off, e->len);
-  			for (j = 0; j < e->len; j++) {
-  			  x++;
-  			}
+  			/*printf("DEL: ");*/
+  			/*printf("off %d len %d\n", e->off, e->len);*/
+  			x += e->len;
   			break;
   		case DIFF_INSERT:
-  			//printf("INS: ");
-  			//printf("off %d len %d\n", e->off, e->len);
-  			for (j = 0; j < e->len; j++) {
-  			  y++;
-  			}
+  			/*printf("INS: ");*/
+  			/*printf("off %d len %d\n", e->off, e->len);*/
+  			y += e->len;
   			break;
   	}
   }
+                           
+  varray_del(ses);
 
-                
-                
+
+
+void lcs_cLCSs(obj, s1, s2)
+
+    SV *obj
+    SV * s1
+    SV * s2
+
+    PREINIT:
+        struct CTX *ctx = (struct CTX *)SvIVX(SvRV(obj));
+
+    PPCODE:
+        int d, sn, i;
+        struct varray *ses = varray_new(sizeof(struct diff_edit), NULL);
+
+        STRLEN n;
+        STRLEN m;
+        char *a = SvPV (s1, n);
+        char *b = SvPV (s2, m);
+   
+        d = diff(a, 0, n, b, 0, m, NULL, NULL, 0, ses, &sn, NULL);
+
+ 
+  int x,y,j;
+  x=y=0;
+
+  XSprePUSH;
+
+  for (i = 0; i < sn; i++) {
+  	struct diff_edit *e = varray_get(ses, i);
+  
+  	switch (e->op) {
+  		case DIFF_MATCH:
+  		    /*printf("x %d y %d\n", x, y);*/
+            if (1) {
+  		      AV *arr;
+  		      arr = newAV();
+              av_push(arr, newSViv(x));
+              av_push(arr, newSViv(y));
+              av_push(arr, newSViv(e->len));
+              XPUSHs(sv_2mortal(newRV_noinc((SV *)arr)));
+  			  x += e->len;
+  			  y += e->len;
+  			}
+  			break;
+  		case DIFF_DELETE:
+  			/*printf("DEL: ");*/
+  			/*printf("off %d len %d\n", e->off, e->len);*/
+  			x += e->len;
+  			break;
+  		case DIFF_INSERT:
+  			/*printf("INS: ");*/
+  			/*printf("off %d len %d\n", e->off, e->len);*/
+  			y += e->len;
+  			break;
+  	}
+  }
+                           
   varray_del(ses);
 

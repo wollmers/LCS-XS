@@ -58,7 +58,7 @@ my @strings3 = map { join('',@$_) } @data3;
 
 if (1) {
     print "case:\n",join("\n",@strings),"\n";
-    cmpthese( 50_000, {
+    cmpthese( -1, {
        'LCS' => sub {
             $traditional->LCS(@data)
         },
@@ -74,12 +74,6 @@ if (1) {
         'L::Tiny' => sub {
             LCS::Tiny->LCS(@data)
         },
-    });
-}
-
-if (1) {
-    print "case:\n",join("\n",@strings),"\n";
-    cmpthese( 200_000, {
         'S::Sim' => sub {
             similarity(@strings)
         },
@@ -89,12 +83,15 @@ if (1) {
         'LCS::XSs' => sub {
             $lcsxs->LCSs(@strings)
         },
+        'cLCS::XSs' => sub {
+            $lcsxs->cLCSs(@strings)
+        },
     });
 }
 
 if (1) {
     print "case:\n",join("\n",@strings2),"\n";
-    cmpthese( 1_000, {
+    cmpthese( -1, {
        'LCS' => sub {
             $traditional->LCS(@data2)
         },
@@ -110,17 +107,14 @@ if (1) {
         'L::BV' => sub {
             LCS::BV->LCS(@data2)
         },
-   });
-}
-
-if (1) {
-    print "case:\n",join("\n",@strings2),"\n";
-    cmpthese( 100_000, {
         'LCS::XSa' => sub {
             $lcsxs->LCS(@data2)
         },
         'LCS::XSs' => sub {
             $lcsxs->LCSs(@strings2)
+        },
+        'cLCS::XSs' => sub {
+            $lcsxs->cLCSs(@strings2)
         },
         'S::Sim' => sub {
             similarity(@strings2)
@@ -129,8 +123,8 @@ if (1) {
 }
 
 if (1) {
-    print "case:\n",join("\n",@strings3),"\n";
-    cmpthese( 500, {
+    print "case:\n",join("\n",('[qw/a b d/ x 50]', '[qw/b a d c/ x 50]')),"\n";
+    cmpthese( -1, {
        'LCS' => sub {
             $traditional->LCS(@data3)
        },
@@ -146,12 +140,6 @@ if (1) {
         'L::Tiny' => sub {
             LCS::Tiny->LCS(@data3)
         },
-    });
-}
-
-if (1) {
-    print "case:\n",join("\n",@strings3),"\n";
-    timethese( 1_000, {
         'S::Sim' => sub {
             similarity(@strings3)
         },
@@ -160,6 +148,9 @@ if (1) {
         },
         'LCS::XSs' => sub {
             $lcsxs->LCSs(@strings3)
+        },
+        'cLCS::XSs' => sub {
+            $lcsxs->cLCSs(@strings3)
         },
     });
 }

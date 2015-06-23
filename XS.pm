@@ -3,26 +3,11 @@ package LCS::XS;
 use 5.008;
 use strict;
 use warnings;
-our $VERSION = '0.01';
+our $VERSION = '0.02_01';
 
 require XSLoader;
 XSLoader::load('LCS::XS', $VERSION);
 
-##############################
-# code adapted from Algorithm::Diff
-
-sub line_map {
-    my $ctx = shift;
-    my %lines;
-    push @{ $lines{$_[$_]} }, $_ for 0..$#_; # values MUST be SvIOK
-    \%lines;
-}
-
-sub callback {
-    my ($ctx, @b) = @_;
-    my $h = $ctx->line_map(@b);
-    sub { @_ ? _core_loop($ctx, $_[0], 0, $#{$_[0]}, $h) : @b }
-}
 
 1;
 

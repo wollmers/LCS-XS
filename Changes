@@ -1,4 +1,7 @@
 Revision history for LCS::XS.
 
-0.01  2015-06-21 13:57:36 CEST
+0.02  2015-06-23 22:52:36 CEST
+        - backwards compatible
+
+0.01  2015-06-21 19:48:36 CEST
         - first release
