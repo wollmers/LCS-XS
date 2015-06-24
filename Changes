@@ -2,6 +2,8 @@ Revision history for LCS::XS.
 
 0.02  2015-06-23 22:52:36 CEST
         - backwards compatible
+        - test requires
+        - min perl version
 
 0.01  2015-06-21 19:48:36 CEST
         - first release
