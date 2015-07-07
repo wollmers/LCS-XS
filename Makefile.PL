@@ -21,4 +21,14 @@ WriteMakefile(
             "Test::Deep" => "0",
             "Test::More" => "0.88",
     },
+    META_MERGE => {
+      'meta-spec' => { version => 2 },
+       resources => {
+         repository => {
+             type => 'git',
+             url  => 'https://github.com/wollmers/LCS-XS.git',
+             web  => 'https://github.com/wollmers/LCS-XS',
+         },
+       },
+    },
 );
