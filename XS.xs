@@ -20,7 +20,7 @@
 #include <mba/suba.c>
 
 struct CTX {
-
+    IV dummy;
 };
 
 inline
