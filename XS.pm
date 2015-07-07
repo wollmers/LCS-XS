@@ -3,7 +3,7 @@ package LCS::XS;
 use 5.008;
 use strict;
 use warnings;
-our $VERSION = '0.02_02';
+our $VERSION = '0.04';
 
 require XSLoader;
 XSLoader::load('LCS::XS', $VERSION);

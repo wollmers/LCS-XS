@@ -1,6 +1,6 @@
 Changes
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
 mba/allocator.c
 mba/allocator.h
 mba/bitset.h
@@ -30,7 +30,6 @@ mba/text.h
 mba/time.h
 mba/varray.c
 mba/varray.h
-META.yml			Module meta-data (added by MakeMaker)
 ppport.h
 README
 README.md
